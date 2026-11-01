@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta name="google" content="notranslate">
+    <title>Piáo lǎoshī의 중국어 단어 & 간체자 마스터</title>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #2c87ae;
+            --primary-light: #eaf4fa;
+            --accent: #f7630c;
+            --success: #2e7d32;
+            --text-main: #2b2b2b;
+            --bg-body: #f4f7f9;
+        }
+
+        body { font-family: 'Noto Sans KR', sans-serif; text-align: center; background-color: var(--bg-body); padding: 16px 8px; margin: 0; color: var(--text-main); user-select: none; }
+        
+        .teacher-header { margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .teacher-image { max-height: 60px; width: auto; object-fit: contain; border-radius: 8px; }
+        .main-title { color: var(--primary); font-weight: 700; margin: 0; font-size: 22px; letter-spacing: -0.5px; }
+
+        .content-box { background-color: #ffffff; max-width: 480px; margin: 0 auto; padding: 20px; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); box-sizing: border-box; }
+        .sub-title { color: #666; font-size: 14px; margin: 0 0 14px 0; }
+        #welcome-msg { font-weight: bold; font-size: 15px; margin: 0 0 10px 0; color: var(--primary); }
+
+        .word-card { background: linear-gradient(135deg, #f0f7fb 0%, #e1eff8 100%); padding: 12px; border-radius: 12px; margin-bottom: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .card-top-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .card-word { font-size: 26px; font-weight: bold; color: #1a4f66; background: #fff; padding: 2px 14px; border-radius: 6px; }
+        .card-pinyin { font-size: 18px; font-weight: bold; color: var(--accent); background: #fff; padding: 2px 10px; border-radius: 4px; border: 1px solid #ffd6c9; }
+        .card-meaning { font-size: 15px; font-weight: 600; color: #444; margin-top: 2px; word-break: keep-all; }
+
+        #grid-container { display: flex; justify-content: center; margin: 10px 0; }
+        #character-target { width: 220px; height: 220px; border: 3px solid var(--primary); background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(44,135,174,0.12); }
+        
+        .button-group { display: flex; justify-content: center; gap: 10px; margin: 14px 0 6px 0; }
+        .btn { padding: 11px 20px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; color: white; transition: all 0.15s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.12); }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn:disabled { background-color: #e0e0e0 !important; color: #a0a0a0 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .btn-start { background-color: var(--primary); padding: 12px 36px; font-size: 16px; margin-top: 10px; }
+        .btn-speak { background-color: #7e57c2; }
+        .btn-next { background-color: var(--success); }
+        .btn-submit { background-color: var(--primary); padding: 14px 30px; font-size: 16px; width: 100%; margin-top: 15px; border-radius: 12px; }
+        
+        #status { font-size: 13px; margin-top: 10px; font-weight: 600; color: var(--primary); background-color: var(--primary-light); padding: 6px 14px; border-radius: 20px; display: inline-block; min-height: 20px; }
+        input[type="text"], select { padding: 11px 16px; font-size: 15px; width: 100%; max-width: 320px; border: 2px solid #ddd; border-radius: 50px; text-align: center; margin-bottom: 12px; outline: none; box-sizing: border-box; }
+        input[type="text"]:focus, select:focus { border-color: var(--primary); }
+
+        /* 🧩 짝 맞추기 매트릭스 그리드 스타일 */
+        .match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+        .tile { min-height: 64px; aspect-ratio: 1; border-radius: 10px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; text-align: center; padding: 6px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: all 0.15s ease; box-sizing: border-box; }
+        .tile:hover { transform: scale(1.02); }
+        .tile.selected { border-color: var(--primary); background-color: #cbe7f5; }
+        .tile.matched { opacity: 0.18; pointer-events: none; border-color: transparent; }
+        .tile.wrong { animation: shake 0.3s; background-color: #fdecea; border-color: #e57373; }
+        .tile-py { font-size: 15px; color: var(--primary); font-family: 'Segoe UI', Verdana, sans-serif; }
+        .tile-mean { font-size: 12px; color: #333; line-height: 1.25; }
+
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .report-table th, .report-table td { padding: 9px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        .big-accuracy { font-size: 34px; font-weight: 800; color: #d32f2f; display: block; margin-top: 4px; }
+
+        @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+    </style>
+</head>
+<body translate="no">
+
+    <div class="teacher-header">
+        <img src="20250307_210837.jpg" alt="Piáo lǎoshī" class="teacher-image" onerror="this.style.display='none'">
+        <h2 class="main-title">Piáo lǎoshī와 함께하는 간체자 & 단어 점검</h2>
+    </div>
+
+    <!-- 1. 시작 화면 -->
+    <div id="start-screen" style="display: block;">
+        <div class="content-box">
+            <p class="sub-title"><b>학번, 이름</b> 입력 후 <b>단원</b>을 선택하세요.</p>
+            <input type="text" id="student-name" placeholder="예: 20113 김세윤"><br>
+            
+            <select id="lesson-select">
+                <option value="1-1">1과 본문 1 어휘</option><option value="1-2">1과 본문 2 어휘</option>
+                <option value="2-1">2과 본문 1 어휘</option><option value="2-2">2과 본문 2 어휘</option>
+                <option value="3-1">3과 본문 1 어휘</option><option value="3-2">3과 본문 2 어휘</option>
+                <option value="4-1">4과 본문 1 어휘</option><option value="4-2">4과 본문 2 어휘</option>
+                <option value="5-1">5과 본문 1 어휘</option><option value="5-2">5과 본문 2 어휘</option>
+                <option value="6-1">6과 본문 1 어휘</option><option value="6-2">6과 본문 2 어휘</option>
+                <option value="7-1">7과 본문 1 어휘</option><option value="7-2">7과 본문 2 어휘</option>
+                <option value="8-1">8과 본문 1 어휘</option><option value="8-2">8과 본문 2 어휘</option>
+                <option value="song-1">[노래 어휘 1] 너의 곁에 1</option>
+                <option value="song-2">[노래 어휘 2] 너의 곁에 2</option>
+            </select><br>
+            
+            <button class="btn btn-start" onclick="startLearning()">연습 시작하기 ➔</button>
+        </div>
+    </div>
+
+    <!-- 2. 쓰기 학습 화면 -->
+    <div id="learning-screen" style="display: none;">
+        <div class="content-box">
+            <p id="welcome-msg"></p>
+            
+            <div class="word-card">
+                <div class="card-top-row">
+                    <span class="card-word" id="card-word">단어</span>
+                    <span class="card-pinyin" id="card-pinyin">pǐnyīn</span>
+                </div>
+                <span class="card-meaning" id="card-meaning">의미</span>
+            </div>
+            
+            <div id="grid-container"><div id="character-target"></div></div>
+            
+            <div class="button-group">
+                <button class="btn btn-speak" id="speak-btn" onclick="speakCurrentChar()" disabled>🔊 발음 듣기</button>
+                <button class="btn btn-next" id="next-btn" onclick="handleNextStep()" disabled>다음 ➔</button>
+            </div>
+            <div id="status"></div>
+        </div>
+    </div>
+
+    <!-- 3. 짝 맞추기 화면 -->
+    <div id="match-screen" style="display: none;">
+        <div class="content-box">
+            <h3 style="margin: 0 0 4px 0; color: var(--primary);">🧩 단어 짝 맞추기 클리어 미션</h3>
+            <p class="sub-title" style="margin-bottom: 8px;">모든 단어의 <b>[한어병음]</b>과 <b>[뜻]</b> 짝을 맞추어야 제출 창이 열립니다!</p>
+            <div style="font-weight: bold; color: var(--accent); margin-bottom: 8px;">남은 카드: <span id="remain-count">0</span>장</div>
+            
+            <div class="match-grid" id="match-grid"></div>
+        </div>
+    </div>
+
+    <!-- 4. 리포트 화면 -->
+    <div id="report-screen" style="display: none;">
+        <div class="content-box">
+            <h3 style="margin: 0 0 5px 0; color: var(--primary);">🎉 단원 학습 완료 인증서 🎉</h3>
+            <p class="sub-title" style="margin-bottom: 5px;">[lǎoshī에게 결과 전송하기]를 눌러 점수를 최종 제출하세요.</p>
+            
+            <table class="report-table">
+                <tr><th>과제명</th><td id="rep-title" style="font-weight: bold;"></td></tr>
+                <tr><th>학습자</th><td id="rep-name" style="font-weight: bold;"></td></tr>
+                <tr><th>미션 결과</th><td style="color:var(--success); font-weight:bold;">짝 맞추기 완주 (PASS)</td></tr>
+                <tr><th>일시</th><td id="rep-date"></td></tr>
+            </table>
+
+            <div style="margin-top: 14px; padding: 12px; background-color: #fbe9e7; border-radius: 12px;">
+                <span style="font-size: 14px; font-weight: bold; color: #333;">최종 종합 성공률 (정확도)</span>
+                <span class="big-accuracy" id="rep-accuracy">0%</span>
+            </div>
+            
+            <button class="btn btn-submit" id="submit-btn" onclick="sendDataToGoogle()">🚀 lǎoshī에게 결과 전송하기</button>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-xQepJ-eZR5vKHOKLXNdiYERSANBlx0QbY7hmE9Lqgojc0CCjkuecWGuUvQhwrS-B/exec";
+
+        const lessonData = {
+            '1-1': { title: '1과 본문 1 어휘', items: [
+                { char: '你', word: '你们', pinyin: 'nǐ', meaning: '너, 당신' },
+                { char: '们', word: '你们', pinyin: 'men', meaning: '~들 (사람)' },
+                { char: '好', word: '你好', pinyin: 'hǎo', meaning: '좋다, 안녕하다' },
+                { char: '老', word: '老师', pinyin: 'lǎoshī', meaning: '선생님' }, 
+                { char: '师', word: '老师', pinyin: 'lǎoshī', meaning: '선생님' },
+                { char: '再', word: '再见', pinyin: 'zàijiàn', meaning: '다시 만나, 잘 가' }, 
+                { char: '见', word: '再见', pinyin: 'zàijiàn', meaning: '보다, 만나다' },
+                { char: '明', word: '明天', pinyin: 'míngtiān', meaning: '내일' }, 
+                { char: '天', word: '明天', pinyin: 'míngtiān', meaning: '내일' }
+            ]},
+            '1-2': { title: '1과 본문 2 어휘', items: [
+                { char: '谢', word: '谢谢', pinyin: 'xièxie', meaning: '감사하다' },
+                { char: '不', word: '不客气', pinyin: 'búkèqi', meaning: '아니다' }, 
+                { char: '客', word: '不客气', pinyin: 'búkèqi', meaning: '손님' }, 
+                { char: '气', word: '不客气', pinyin: 'búkèqi', meaning: '기운' },
+                { char: '对', word: '对不起', pinyin: 'duìbuqǐ', meaning: '대하다, 맞다' }, 
+                { char: '起', word: '对不起', pinyin: 'duìbuqǐ', meaning: '일어나다' },
+                { char: '没', word: '没关系', pinyin: 'méiguānxi', meaning: '없다' }, 
+                { char: '关', word: '没关系', pinyin: 'méiguānxi', meaning: '관계' }, 
+                { char: '系', word: '没关系', pinyin: 'méiguānxi', meaning: '관계' }
+            ]},
+            '2-1': { title: '2과 본문 1 어휘', items: [
+                { char: '叫', word: '叫', pinyin: 'jiào', meaning: '~(이)라고 부르다' },
+                { char: '什', word: '什么', pinyin: 'shénme', meaning: '무엇, 무슨' }, 
+                { char: '么', word: '什么', pinyin: 'shénme', meaning: '무엇, 무슨' },
+                { char: '名', word: '名字', pinyin: 'míngzi', meaning: '이름' }, 
+                { char: '字', word: '名字', pinyin: 'míngzi', meaning: '글자, 이름' },
+                { char: '呢', word: '你呢', pinyin: 'ne', meaning: '~너는?' }
+            ]},
+            '2-2': { title: '2과 본문 2 어휘', items: [
+                { char: '是', word: '是', pinyin: 'shì', meaning: '~이다' },
+                { char: '中', word: '中国', pinyin: 'Zhōngguó', meaning: '가운데, 중국' }, 
+                { char: '国', word: '中国', pinyin: 'Zhōngguó', meaning: '나라, 중국' },
+                { char: '人', word: '人', pinyin: 'rén', meaning: '사람' },
+                { char: '吗', word: '吗', pinyin: 'ma', meaning: '~입니까?' },
+                { char: '哪', word: '哪国', pinyin: 'nǎ', meaning: '어느' },
+                { char: '韩', word: '韩国', pinyin: 'Hánguó', meaning: '한국' },
+                { char: '谁', word: '谁', pinyin: 'shéi', meaning: '누구' }
+            ]},
+            '3-1': { title: '3과 본문 1 어휘', items: [
+                { char: '哥', word: '哥哥', pinyin: 'gēge', meaning: '형, 오빠' },
+                { char: '今', word: '今年', pinyin: 'jīnnián', meaning: '올해' }, 
+                { char: '年', word: '今年', pinyin: 'jīnnián', meaning: '해, 년' },
+                { char: '多', word: '多大', pinyin: 'duōdà', meaning: '얼마나, 많다' }, 
+                { char: '大', word: '多大', pinyin: 'duōdà', meaning: '크다, 나이가 많다' },
+                { char: '岁', word: '岁', pinyin: 'suì', meaning: '살, 세' }
+            ]},
+            '3-2': { title: '3과 본문 2 어휘', items: [
+                { char: '有', word: '没有', pinyin: 'yǒu', meaning: '있다' },
+                { char: '没', word: '没有', pinyin: 'méiyǒu', meaning: '없다' },
+                { char: '这', word: '这', pinyin: 'zhè', meaning: '이(것), 이 사람' },
+                { char: '那', word: '那', pinyin: 'nà', meaning: '저(것), 저 사람' },
+                { char: '上', word: '上', pinyin: 'shàng', meaning: '다니다' },
+                { char: '年', word: '年级', pinyin: 'niánjí', meaning: '년, 학년' }, 
+                { char: '级', word: '年级', pinyin: 'niánjí', meaning: '급, 학년' },
+                { char: '初', word: '初中', pinyin: 'chūzhōng', meaning: '중학교' }, 
+                { char: '中', word: '初中', pinyin: 'chūzhōng', meaning: '중학교' },
+                { char: '高', word: '高中', pinyin: 'gāozhōng', meaning: '고등학교' }
+            ]},
+            '4-1': { title: '4과 본문 1 어휘', items: [
+                { char: '几', word: '星期几', pinyin: 'jǐ', meaning: '몇' },
+                { char: '今', word: '今天', pinyin: 'jīntiān', meaning: '오늘' }, 
+                { char: '天', word: '今天', pinyin: 'jīntiān', meaning: '오늘' },
+                { char: '月', word: '一月', pinyin: 'yuè', meaning: '월, 달' },
+                { char: '号', word: '五号', pinyin: 'hào', meaning: '일, 날짜' },
+                { char: '星', word: '星期', pinyin: 'xīngqī', meaning: '별, 요일' }, 
+                { char: '期', word: '星期', pinyin: 'xīngqī', meaning: '기간, 요일' },
+                { char: '日', word: '星期日', pinyin: 'xīngqīrì', meaning: '일요일' }
+            ]},
+            '4-2': { title: '4과 본문 2 어휘', items: [
+                { char: '现', word: '现在', pinyin: 'xiànzài', meaning: '지금' }, 
+                { char: '在', word: '现在', pinyin: 'xiànzài', meaning: '지금, 있다' },
+                { char: '点', word: '两点', pinyin: 'diǎn', meaning: '시 (시간)' },
+                { char: '两', word: '两点', pinyin: 'liǎng', meaning: '2, 둘' },
+                { char: '分', word: '分', pinyin: 'fēn', meaning: '분' },
+                { char: '回', word: '回家', pinyin: 'huíjiā', meaning: '되돌아가다' }, 
+                { char: '家', word: '回家', pinyin: 'huíjiā', meaning: '집' }
+            ]},
+            '5-1': { title: '5과 본문 1 어휘', items: [
+                { char: '半', word: '半', pinyin: 'bàn', meaning: '30분, 반' },
+                { char: '喜', word: '喜欢', pinyin: 'xǐhuan', meaning: '좋아하다' }, 
+                { char: '欢', word: '喜欢', pinyin: 'xǐhuan', meaning: '기뻐하다' },
+                { char: '做', word: '做', pinyin: 'zuò', meaning: '하다, 만들다' },
+                { char: '看', word: '看书', pinyin: 'kànshū', meaning: '보다' }, 
+                { char: '书', word: '看书', pinyin: 'kànshū', meaning: '책' },
+                { char: '想', word: '想当', pinyin: 'xiǎng', meaning: '~하고 싶다' },
+                { char: '当', word: '想当', pinyin: 'dāng', meaning: '~이 되다' }
+            ]},
+            '5-2': { title: '5과 본문 2 어휘', items: [
+                { char: '会', word: '会', pinyin: 'huì', meaning: '~할 줄 알다' },
+                { char: '打', word: '打乒乓球', pinyin: 'dǎ', meaning: '(운동을) 하다' },
+                { char: '球', word: '乒乓球', pinyin: 'pīngpāngqiú', meaning: '공' },
+                { char: '一', word: '一点儿', pinyin: 'yìdiǎnr', meaning: '하나, 조금' }, 
+                { char: '点', word: '一点儿', pinyin: 'yìdiǎnr', meaning: '조금' },
+                { char: '儿', word: '一点儿', pinyin: 'yìdiǎnr', meaning: '조금 (어미)' },
+                { char: '吧', word: '吧', pinyin: 'ba', meaning: '~하자' },
+                { char: '问', word: '问题', pinyin: 'wèntí', meaning: '묻다, 문제' }, 
+                { char: '题', word: '问题', pinyin: 'wèntí', meaning: '제목, 문제' }
+            ]},
+            '6-1': { title: '6과 본문 1 어휘', items: [
+                { char: '去', word: '去', pinyin: 'qù', meaning: '가다' },
+                { char: '哪', word: '哪儿', pinyin: 'nǎr', meaning: '어느, 어디' }, 
+                { char: '儿', word: '哪儿', pinyin: 'nǎr', meaning: '어디' },
+                { char: '天', word: '天安门', pinyin: "Tiān'ānmén", meaning: '하늘, 천안문' }, 
+                { char: '安', word: '天安门', pinyin: "Tiān'ānmén", meaning: '편안하다' }, 
+                { char: '门', word: '天安门', pinyin: "Tiān'ānmén", meaning: '문' },
+                { char: '怎', word: '怎么', pinyin: 'zěnme', meaning: '어떻게' }, 
+                { char: '么', word: '怎么', pinyin: 'zěnme', meaning: '어떻게' },
+                { char: '坐', word: '坐', pinyin: 'zuò', meaning: '앉다, 타다' },
+                { char: '地', word: '地铁', pinyin: 'dìtiě', meaning: '땅, 지하철' }, 
+                { char: '铁', word: '地铁', pinyin: 'dìtiě', meaning: '쇠, 지하철' }
+            ]},
+            '6-2': { title: '6과 본문 2 어휘', items: [
+                { char: '请', word: '请问', pinyin: 'qǐngwèn', meaning: '부탁하다' }, 
+                { char: '问', word: '请问', pinyin: 'qǐngwèn', meaning: '묻다' },
+                { char: '洗', word: '洗手间', pinyin: 'xǐshǒujiān', meaning: '씻다' }, 
+                { char: '手', word: '洗手间', pinyin: 'xǐshǒujiān', meaning: '손' }, 
+                { char: '间', word: '洗手间', pinyin: 'xǐshǒujiān', meaning: '방, 사이' },
+                { char: '在', word: '在', pinyin: 'zài', meaning: '~에 있다' },
+                { char: '一', word: '一直', pinyin: 'yìzhí', meaning: '곧장, 곧바로' }, 
+                { char: '直', word: '一直', pinyin: 'yìzhí', meaning: '곧다' },
+                { char: '往', word: '往前', pinyin: 'wǎng', meaning: '~쪽으로' },
+                { char: '前', word: '往前', pinyin: 'qián', meaning: '앞' },
+                { char: '走', word: '往前走', pinyin: 'zǒu', meaning: '걷다, 가다' },
+                { char: '远', word: '不远', pinyin: 'yuǎn', meaning: '멀다' },
+                { char: '太', word: '太远', pinyin: 'tài', meaning: '너무, 매우' }
+            ]},
+            '7-1': { title: '7과 본문 1 어휘', items: [
+                { char: '吃', word: '吃饭', pinyin: 'chīfàn', meaning: '먹다' }, 
+                { char: '饭', word: '吃饭', pinyin: 'chīfàn', meaning: '밥' },
+                { char: '了', word: '吃饭了吗', pinyin: 'le', meaning: '~했다' },
+                { char: '还', word: '还', pinyin: 'hái', meaning: '아직' },
+                { char: '很', word: '很', pinyin: 'hěn', meaning: '아주, 매우' },
+                { char: '饿', word: '饿', pinyin: 'è', meaning: '배고프다' },
+                { char: '那', word: '那', pinyin: 'nà', meaning: '그러면' },
+                { char: '外', word: '外卖', pinyin: 'wàimài', meaning: '밖, 배달' }, 
+                { char: '卖', word: '外卖', pinyin: 'wàimài', meaning: '팔다' }
+            ]},
+            '7-2': { title: '7과 본문 2 어휘', items: [
+                { char: '过', word: '过', pinyin: 'guo', meaning: '~한 적 있다' },
+                { char: '味', word: '味道', pinyin: 'wèidao', meaning: '맛' }, 
+                { char: '道', word: '味道', pinyin: 'wèidao', meaning: '길, 도리' },
+                { char: '怎', word: '怎么样', pinyin: 'zěnmeyàng', meaning: '어떠하다' }, 
+                { char: '么', word: '怎么样', pinyin: 'zěnmeyàng', meaning: '어떠하다' }, 
+                { char: '样', word: '怎么样', pinyin: 'zěnmeyàng', meaning: '모양' },
+                { char: '有', word: '有点儿', pinyin: 'yǒudiǎnr', meaning: '조금, 약간' }, 
+                { char: '点', word: '有点儿', pinyin: 'yǒudiǎnr', meaning: '조금' }, 
+                { char: '儿', word: '有点儿', pinyin: 'yǒudiǎnr', meaning: '조금' },
+                { char: '爱', word: '爱', pinyin: 'ài', meaning: '사랑하다' },
+                { char: '的', word: '的', pinyin: 'de', meaning: '~한 것' }
+            ]},
+            '8-1': { title: '8과 본문 1 어휘', items: [
+                { char: '要', word: '要', pinyin: 'yào', meaning: '~하려고 하다' },
+                { char: '买', word: '买旗袍', pinyin: 'mǎi', meaning: '사다' },
+                { char: '件', word: '件', pinyin: 'jiàn', meaning: '벌 (옷 단위)' },
+                { char: '不', word: '不错', pinyin: 'búcuò', meaning: '아니다' }, 
+                { char: '错', word: '不错', pinyin: 'búcuò', meaning: '틀리다, 좋다' },
+                { char: '红', word: '红色', pinyin: 'hóngsè', meaning: '빨갛다' }, 
+                { char: '色', word: '红色', pinyin: 'hóngsè', meaning: '색깔' }
+            ]},
+            '8-2': { title: '8과 본문 2 어휘', items: [
+                { char: '请', word: '请等', pinyin: 'qǐng', meaning: '부탁하다' },
+                { char: '等', word: '等一下', pinyin: 'děng', meaning: '기다리다' },
+                { char: '一', word: '一下', pinyin: 'yíxià', meaning: '조금, 한 번' }, 
+                { char: '下', word: '一下', pinyin: 'yíxià', meaning: '번' },
+                { char: '双', word: '双', pinyin: 'shuāng', meaning: '켤레 (신발)' },
+                { char: '多', word: '多少', pinyin: 'duōshao', meaning: '얼마, 몇' }, 
+                { char: '少', word: '多少', pinyin: 'duōshao', meaning: '적다' },
+                { char: '钱', word: '钱', pinyin: 'qián', meaning: '돈' },
+                { char: '百', word: '一百', pinyin: 'bǎi', meaning: '100, 백' },
+                { char: '块', word: '块', pinyin: 'kuài', meaning: '위안 (화폐)' },
+                { char: '扫', word: '扫一下', pinyin: 'sǎo', meaning: '스캔하다' }
+            ]},
+            'song-1': { title: '[노래 어휘 1] 너의 곁에 1', items: [
+                { char: '长', word: '长得', pinyin: 'zhǎngde', meaning: '~하게 생기다' },
+                { char: '丑', word: '丑', pinyin: 'chǒu', meaning: '못생기다' },
+                { char: '活', word: '活', pinyin: 'huó', meaning: '살다' },
+                { char: '久', word: '久', pinyin: 'jiǔ', meaning: '오래되다' },
+                { char: '帅', word: '帅', pinyin: 'shuài', meaning: '잘생기다' },
+                { char: '老', word: '老', pinyin: 'lǎo', meaning: '늙다' },
+                { char: '快', word: '快', pinyin: 'kuài', meaning: '빠르다' },
+                { char: '宁', word: '宁愿', pinyin: 'nìngyuàn', meaning: '차라리 ~하다' },
+                { char: '积', word: '积极', pinyin: 'jījí', meaning: '적극적이다' },
+                { char: '可', word: '可爱', pinyin: "kě'ài", meaning: '귀엽다' }
+            ]},
+            'song-2': { title: '[노래 어휘 2] 너의 곁에 2', items: [
+                { char: '胖', word: '胖', pinyin: 'pàng', meaning: '뚱뚱하다' },
+                { char: '日', word: '日子', pinyin: 'rìzi', meaning: '날들, 생활' },
+                { char: '旺', word: '旺', pinyin: 'wàng', meaning: '번창하다' },
+                { char: '做', word: '做', pinyin: 'zuò', meaning: '되다, 하다' },
+                { char: '平', word: '平凡', pinyin: 'píngfán', meaning: '평범하다' },
+                { char: '陪', word: '陪', pinyin: 'péi', meaning: '함께하다' },
+                { char: '身', word: '身旁', pinyin: 'shēnpáng', meaning: '곁, 옆' }
+            ]}
+        };
+
+        let itemList = [];
+        let currentTitle = "";
+        let currentIndex = 0;
+        let writer = null;
+        let studentName = "";
+        let totalStrokesAttempted = 0;
+        let totalMistakes = 0;
+        let isCharacterComplete = false;
+        let finalAccuracyScore = 0;
+
+        function startLearning() {
+            const nameInput = document.getElementById('student-name').value.trim();
+            if(!nameInput) { alert("학번과 이름을 반드시 입력해야 합니다!"); return; }
+            studentName = nameInput;
+            
+            const selectedLesson = document.getElementById('lesson-select').value;
+            itemList = lessonData[selectedLesson].items;
+            currentTitle = lessonData[selectedLesson].title;
+            
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('learning-screen').style.display = 'block';
+            document.getElementById('welcome-msg').innerText = `👋 [${studentName}] 학생, 시작합니다!`;
+            
+            initWriter();
+        }
+
+        function initWriter() {
+            const currentItem = itemList[currentIndex];
+            const targetContainer = document.getElementById('character-target');
+            targetContainer.innerHTML = '';
+            
+            document.getElementById('card-word').innerText = currentItem.word;
+            document.getElementById('card-pinyin').innerText = currentItem.pinyin;
+            document.getElementById('card-meaning').innerText = currentItem.meaning;
+            
+            document.getElementById('speak-btn').disabled = true;
+            document.getElementById('next-btn').disabled = true; 
+            isCharacterComplete = false; 
+
+            // 메모리 누수 방지 및 캔버스 초기화
+            writer = HanziWriter.create('character-target', currentItem.char, {
+                width: 220, 
+                height: 220, 
+                showOutline: true, 
+                showHintAfterMisses: 1, 
+                strokeColor: '#2c87ae', 
+                outlineColor: '#eceff1', 
+                drawingWidth: 15,
+                strokeAnimationSpeed: 1.5,
+                delayBetweenStrokes: 100
+            });
+
+            // 1. 글자 로드 시 획순 자동 1회 재생
+            document.getElementById('status').innerText = `👀 [${currentIndex + 1}/${itemList.length}] 획순을 잘 보세요...`;
+            writer.animateCharacter({
+                onComplete: function() {
+                    document.getElementById('status').innerText = `✍️ 획을 따라 써 보세요! (1회 쓰기)`;
+                    startQuiz();
+                }
+            });
+        }
+
+        function startQuiz() { 
+            if (!writer) return;
+            writer.quiz({ 
+                onCorrectStroke: function() { totalStrokesAttempted++; },
+                onMistake: function() { totalStrokesAttempted++; totalMistakes++; },
+                onComplete: function() { 
+                    isCharacterComplete = true; 
+                    document.getElementById('speak-btn').disabled = false; 
+                    document.getElementById('status').innerText = "🎯 완료! [🔊 발음 듣기]를 누르세요.";
+                } 
+            }); 
+        }
+
+        // 고신뢰성 TTS 재생 엔진: 구글 1차 시도 실패 시 유다오 사전 MP3로 무중단 전환
+        function speakCurrentChar() {
+            const wordToSpeak = itemList[currentIndex].word;
+            const encodedWord = encodeURIComponent(wordToSpeak);
+            
+            const googleUrl = "https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&q=" + encodedWord;
+            const youdaoUrl = "https://dict.youdao.com/dictvoice?audio=" + encodedWord + "&le=zh";
+
+            const audio = new Audio(googleUrl);
+            const triggerNext = () => {
+                if (isCharacterComplete) {
+                    document.getElementById('next-btn').disabled = false; 
+                    document.getElementById('status').innerText = "✨ 청취 완료! [다음 ➔]을 누르세요.";
+                }
+            };
+
+            audio.play().then(triggerNext).catch(() => {
+                const fbAudio = new Audio(youdaoUrl);
+                fbAudio.play().then(triggerNext).catch(() => {
+                    triggerNext(); // 음원 서비스 모두 실패 시에도 학생 멈춤 방지
+                });
+            });
+        }
+
+        function handleNextStep() {
+            if (currentIndex < itemList.length - 1) { 
+                currentIndex++; 
+                initWriter(); 
+            } else { 
+                startMatchingGame(); // 쓰기 완료 시 짝 맞추기 미션 오픈
+            }
+        }
+
+        /* ================= 🧩 짝 맞추기 매트릭스 엔진 ================= */
+        let matchCards = [];
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = 0;
+        let matchAttempts = 0;
+        let matchMistakes = 0;
+
+        function startMatchingGame() {
+            document.getElementById('learning-screen').style.display = 'none';
+            document.getElementById('match-screen').style.display = 'block';
+
+            // 중복 단어 제거(고유화) 후 최대 8쌍(16장, 4x4 매트릭스) 슬라이싱
+            const uniqueMap = new Map();
+            itemList.forEach(item => {
+                if (!uniqueMap.has(item.word)) {
+                    uniqueMap.set(item.word, item);
+                }
+            });
+
+            const uniqueItems = Array.from(uniqueMap.values()).slice(0, 8);
+            totalPairs = uniqueItems.length;
+            matchedPairs = 0;
+            matchAttempts = 0;
+            matchMistakes = 0;
+
+            matchCards = [];
+            uniqueItems.forEach((item, idx) => {
+                matchCards.push({ id: idx, type: 'py', text: item.pinyin });
+                matchCards.push({ id: idx, type: 'mean', text: item.meaning.split('/')[0].split(',')[0].trim() });
+            });
+
+            // Fisher-Yates 셔플 알고리즘 적용 (완전 무작위 배분)
+            for (let i = matchCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [matchCards[i], matchCards[j]] = [matchCards[j], matchCards[i]];
+            }
+
+            renderMatchGrid();
+        }
+
+        function renderMatchGrid() {
+            const grid = document.getElementById('match-grid');
+            grid.innerHTML = '';
+            document.getElementById('remain-count').innerText = (totalPairs - matchedPairs) * 2;
+
+            matchCards.forEach((card, index) => {
+                const tile = document.createElement('div');
+                tile.className = `tile ${card.type === 'py' ? 'tile-py' : 'tile-mean'}`;
+                tile.innerText = card.text;
+                tile.onclick = () => onCardClick(tile, card);
+                grid.appendChild(tile);
+            });
+        }
+
+        function onCardClick(tile, card) {
+            if (tile.classList.contains('matched') || tile.classList.contains('selected') || selectedCards.length >= 2) return;
+
+            tile.classList.add('selected');
+            selectedCards.push({ tile, card });
+
+            if (selectedCards.length === 2) {
+                matchAttempts++;
+                const [first, second] = selectedCards;
+
+                // ID가 같고 유형(병음 vs 뜻)이 다를 때 짝 성립
+                if (first.card.id === second.card.id && first.card.type !== second.card.type) {
+                    setTimeout(() => {
+                        first.tile.classList.remove('selected');
+                        second.tile.classList.remove('selected');
+                        first.tile.classList.add('matched');
+                        second.tile.classList.add('matched');
+                        selectedCards = [];
+                        matchedPairs++;
+                        document.getElementById('remain-count').innerText = (totalPairs - matchedPairs) * 2;
+
+                        if (matchedPairs === totalPairs) {
+                            setTimeout(() => {
+                                alert("🎉 축하합니다! 단어 짝을 모두 완벽하게 맞췄습니다!");
+                                showFinalReport();
+                            }, 350);
+                        }
+                    }, 200);
+                } else {
+                    matchMistakes++;
+                    setTimeout(() => {
+                        first.tile.classList.add('wrong');
+                        second.tile.classList.add('wrong');
+                        setTimeout(() => {
+                            first.tile.classList.remove('selected', 'wrong');
+                            second.tile.classList.remove('selected', 'wrong');
+                            selectedCards = [];
+                        }, 300);
+                    }, 350);
+                }
+            }
+        }
+
+        /* ================= 📊 리포트 및 GAS 전송 로직 ================= */
+        function showFinalReport() {
+            document.getElementById('match-screen').style.display = 'none';
+            document.getElementById('report-screen').style.display = 'block';
+
+            const now = new Date();
+            const dateString = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            let writeAcc = 100;
+            if (totalStrokesAttempted > 0) {
+                writeAcc = Math.round(((totalStrokesAttempted - totalMistakes) / totalStrokesAttempted) * 100);
+            }
+            let matchAcc = 100;
+            if (matchAttempts > 0) {
+                matchAcc = Math.round(((matchAttempts - matchMistakes) / matchAttempts) * 100);
+            }
+            if (writeAcc < 0) writeAcc = 0;
+            if (matchAcc < 0) matchAcc = 0;
+
+            finalAccuracyScore = Math.round((writeAcc * 0.5) + (matchAcc * 0.5));
+
+            document.getElementById('rep-title').innerText = currentTitle;
+            document.getElementById('rep-name').innerText = studentName;
+            document.getElementById('rep-date').innerText = dateString;
+            document.getElementById('rep-accuracy').innerText = `${finalAccuracyScore}%`;
+        }
+
+        function sendDataToGoogle() {
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "⏳ 전송 중입니다... 잠시만 기다리세요";
+            btn.disabled = true;
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 7000); // 7초 타임아웃 방어
+
+            const payload = {
+                name: studentName,
+                lesson: currentTitle,
+                accuracy: finalAccuracyScore
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            })
+            .then(() => {
+                clearTimeout(timeoutId);
+                btn.innerText = "✅ 전송 완료!";
+                btn.style.backgroundColor = "var(--success)";
+                alert("성공적으로 제출되었습니다! 창을 닫고 활동지를 확인하세요.");
+            })
+            .catch(() => {
+                clearTimeout(timeoutId);
+                btn.innerText = "🚀 다시 전송 시도하기";
+                btn.disabled = false;
+                alert("네트워크 연결이 지연되고 있습니다. 다시 전송 버튼을 누르거나 선생님께 화면을 보여주세요!");
+            });
+        }
+    </script>
+</body>
+</html>
